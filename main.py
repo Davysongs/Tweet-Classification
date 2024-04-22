@@ -1,29 +1,30 @@
 import pandas as pd
-import nltk
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, accuracy_score
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report
 
-# Download NLTK stop words
-nltk.download('stopwords')
+# Load data
+df = pd.read_csv('twitter_topic_classification_sample.csv')
 
-# Data Understanding
-# Load a sample dataset. You can replace this with your dataset.
-# This example uses a dataset with columns "text" (the tweet) and "category" (the topic).
-data = pd.read_csv('tweets_dataset.csv')
+# Split data into features and target
+X = df['tweet']
+y = df['topic']
 
-# Data Preparation
-# Define a function to clean and tokenize text
-def clean_and_tokenize(text):
-    # Lowercase
-    text = text.lower()
-    # Remove special characters and URLs
-    text = re.sub(r'http\S+|www\S+|[^a-zA-Z\s]', '', text)
-    # Tokenize
-    tokens = word_tokenize(text)
-    # Remove stop words
-    tokens = [word for word in tokens if word not in stopwords.words('english')]
-    return ' '.join
+# Split data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Vectorize text data
+vectorizer = TfidfVectorizer(max_features=1000)
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+# Train Naive Bayes classifier
+clf = MultinomialNB()
+clf.fit(X_train_vec, y_train)
+
+# Predictions
+y_pred = clf.predict(X_test_vec)
+
+# Evaluate the model
+print(classification_report(y_test, y_pred))
