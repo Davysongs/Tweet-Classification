@@ -26,5 +26,7 @@ clf.fit(X_train_vec, y_train)
 # Predictions
 y_pred = clf.predict(X_test_vec)
 
-# Evaluate the model
-print(classification_report(y_test, y_pred))
+# Evaluate the model with zero_division parameter to avoid warnings
+report = classification_report(y_test, y_pred, zero_division=0)
+
+print(report)
